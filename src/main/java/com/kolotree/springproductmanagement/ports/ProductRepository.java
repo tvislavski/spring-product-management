@@ -12,4 +12,10 @@ public interface ProductRepository {
     List<Product> getAll();
 
     boolean delete(SKU productId);
+
+    class DatabaseException extends RuntimeException {
+        public DatabaseException(String message) {
+            super(message);
+        }
+    }
 }

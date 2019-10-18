@@ -2,12 +2,15 @@ package com.kolotree.springproductmanagement.dto;
 
 
 import com.kolotree.springproductmanagement.domain.Product;
-import com.kolotree.springproductmanagement.domain.SKU;
+import io.jsondb.annotation.Document;
+import io.jsondb.annotation.Id;
 
 import java.time.LocalDate;
 
+@Document(collection = "products", schemaVersion = "1.0")
 public class ProductDto {
 
+    @Id
     private String sku;
     private String name;
     private double price;
@@ -61,6 +64,8 @@ public class ProductDto {
     }
 
     public Product toDomain() {
-        return Product.productFrom(sku, name, price, LocalDate.parse(createdAt));
+        return createdAt == null ?
+                Product.newProductFrom(sku, name, price) :
+                Product.productFrom(sku, name, price, LocalDate.parse(createdAt));
     }
 }
