@@ -3,6 +3,7 @@ package com.kolotree.springproductmanagement.web;
 import com.kolotree.springproductmanagement.domain.SKU;
 import com.kolotree.springproductmanagement.dto.ProductDto;
 import com.kolotree.springproductmanagement.ports.ProductRepository;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,11 @@ public class ProductController {
     }
 
     @GetMapping("/product")
+    @ApiOperation(value = "Returns all products")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 500, message = "Server Error")
+    })
     public ResponseEntity<List<ProductDto>> getAll() {
         LOGGER.debug("Executing getAll products...");
         var response = ResponseEntity.ok(productRepository.getAll().stream().map(ProductDto::from).collect(Collectors.toList()));
@@ -32,6 +38,12 @@ public class ProductController {
     }
 
     @PostMapping("/product")
+    @ApiOperation(value = "Saves a product")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Server Error")
+    })
     public ResponseEntity<ProductDto> save(@RequestBody ProductDto productDto) {
         LOGGER.debug("Executing save product {}...", productDto);
         productDto = ProductDto.from(productRepository.save(productDto.toDomain()));
@@ -41,6 +53,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/product/{productId}")
+    @ApiOperation(value = "Deletes a product with id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "OK", response = void.class),
+            @ApiResponse(code = 404, message = "Product with given id not found"),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Server Error")
+    })
     public ResponseEntity delete(@PathVariable String productId) {
         LOGGER.debug("Executing delete product with id {}...", productId);
         boolean deleted = productRepository.delete(SKU.stockKeepingUnitFrom(productId));

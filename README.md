@@ -10,7 +10,8 @@
 
 - On Unix run `./mvnw spring-boot:run`
 - On Windows run `mvnw.cmd spring-boot:run`
-- REST endpoints are available on `localhost:8080`
+- REST endpoints are available on `http://localhost:8080`
+- Swagger documentation is available on `http://localhost:8080/swagger-ui.html`
 
 ## Database
 
