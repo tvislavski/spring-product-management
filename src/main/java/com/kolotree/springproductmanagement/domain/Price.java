@@ -34,6 +34,10 @@ public class Price implements Comparable<Price> {
         return new Price(price);
     }
 
+    public double toDouble() {
+        return value.doubleValue();
+    }
+
     @Override
     public int compareTo(Price o) {
         return value.compareTo(o.value);
