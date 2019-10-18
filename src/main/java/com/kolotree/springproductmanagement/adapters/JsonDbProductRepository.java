@@ -2,7 +2,6 @@ package com.kolotree.springproductmanagement.adapters;
 
 import com.kolotree.springproductmanagement.domain.Product;
 import com.kolotree.springproductmanagement.domain.SKU;
-import com.kolotree.springproductmanagement.dto.ProductDto;
 import com.kolotree.springproductmanagement.ports.ProductRepository;
 import io.jsondb.JsonDBTemplate;
 
@@ -16,17 +15,23 @@ public class JsonDbProductRepository implements ProductRepository {
     public JsonDbProductRepository(String dbDirectory) {
         this.jsonDBTemplate = new JsonDBTemplate(
                 dbDirectory,
-                "com.kolotree.springproductmanagement.dto"
+                "com.kolotree.springproductmanagement.adapters"
         );
-        if (!jsonDBTemplate.collectionExists(ProductDto.class))
-            jsonDBTemplate.createCollection(ProductDto.class);
+        if (!jsonDBTemplate.collectionExists(PersistedProduct.class))
+            jsonDBTemplate.createCollection(PersistedProduct.class);
     }
 
     @Override
     public Product save(Product product) {
         try {
-            jsonDBTemplate.upsert(ProductDto.from(product));
+            PersistedProduct existingProduct = jsonDBTemplate.findById(product.getId().toString(), PersistedProduct.class);
+            if (existingProduct != null && existingProduct.isRemoved())
+                throw new IllegalArgumentException("Duplicate id " + product.getId());
+
+            jsonDBTemplate.upsert(PersistedProduct.from(product));
             return product;
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -35,7 +40,9 @@ public class JsonDbProductRepository implements ProductRepository {
     @Override
     public List<Product> getAll() {
         try {
-            return jsonDBTemplate.findAll(ProductDto.class).stream().map(ProductDto::toDomain).collect(Collectors.toList());
+            return jsonDBTemplate.findAll(PersistedProduct.class).stream()
+                    .filter(productDto -> !productDto.isRemoved())
+                    .map(PersistedProduct::toDomain).collect(Collectors.toList());
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }
@@ -44,10 +51,12 @@ public class JsonDbProductRepository implements ProductRepository {
     @Override
     public boolean delete(SKU productId) {
         try {
-            ProductDto productDto = new ProductDto();
-            productDto.setSku(productId.toString());
-            if (jsonDBTemplate.findById(productId.toString(), ProductDto.class) == null) return false;
-            return jsonDBTemplate.remove(productDto, ProductDto.class) != null;
+            PersistedProduct existingProduct = jsonDBTemplate.findById(productId.toString(), PersistedProduct.class);
+            if (existingProduct == null || existingProduct.isRemoved()) return false;
+
+            existingProduct.setRemoved(true);
+            jsonDBTemplate.upsert(existingProduct);
+            return true;
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage());
         }

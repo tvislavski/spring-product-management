@@ -1,25 +1,31 @@
-package com.kolotree.springproductmanagement.dto;
-
+package com.kolotree.springproductmanagement.adapters;
 
 import com.kolotree.springproductmanagement.domain.Product;
+import io.jsondb.annotation.Document;
+import io.jsondb.annotation.Id;
 
 import java.time.LocalDate;
 
-public class ProductDto {
+@Document(collection = "products", schemaVersion = "1.0")
+public class PersistedProduct {
 
+    private boolean removed;
+
+    @Id
     private String sku;
     private String name;
     private double price;
     private String createdAt;
 
-    public ProductDto() {
+    public PersistedProduct() {
     }
 
-    public ProductDto(String sku, String name, double price, String createdAt) {
+    public PersistedProduct(String sku, String name, double price, String createdAt, boolean removed) {
         this.sku = sku;
         this.name = name;
         this.price = price;
         this.createdAt = createdAt;
+        this.removed = removed;
     }
 
     public String getSku() {
@@ -54,14 +60,22 @@ public class ProductDto {
         this.createdAt = createdAt;
     }
 
-    public static ProductDto from(Product product) {
-        return new ProductDto(product.getId().toString(), product.getName(), product.getPrice().toDouble(),
-                product.getCreatedAt().toString());
-    }
-
     public Product toDomain() {
         return createdAt == null ?
                 Product.newProductFrom(sku, name, price) :
                 Product.productFrom(sku, name, price, LocalDate.parse(createdAt));
+    }
+
+    public boolean isRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+
+    public static PersistedProduct from(Product product) {
+        return new PersistedProduct(product.getId().toString(), product.getName(),
+                product.getPrice().toDouble(), product.getCreatedAt().toString(), false);
     }
 }
