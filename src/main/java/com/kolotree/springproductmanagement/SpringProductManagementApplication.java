@@ -1,7 +1,10 @@
 package com.kolotree.springproductmanagement;
 
+import com.kolotree.springproductmanagement.adapters.JsonDbOrderRepository;
 import com.kolotree.springproductmanagement.adapters.JsonDbProductRepository;
+import com.kolotree.springproductmanagement.ports.OrderRepository;
 import com.kolotree.springproductmanagement.ports.ProductRepository;
+import com.kolotree.springproductmanagement.service.OrderPlacementService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +35,14 @@ public class SpringProductManagementApplication {
 	@Bean
 	public ProductRepository productRepository() {
 		return new JsonDbProductRepository(dbDirectory);
+	}
+
+	@Bean
+	public OrderRepository orderRepository() { return new JsonDbOrderRepository(dbDirectory); }
+
+	@Bean
+	public OrderPlacementService orderPlacementService(ProductRepository productRepository, OrderRepository orderRepository) {
+		return new OrderPlacementService(productRepository, orderRepository);
 	}
 
 	@Bean

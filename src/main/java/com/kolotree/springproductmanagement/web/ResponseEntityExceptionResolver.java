@@ -6,12 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.format.DateTimeParseException;
 
 @ControllerAdvice
-public class ResponseEntityExceptionResolver {
+public class ResponseEntityExceptionResolver extends ResponseEntityExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ResponseEntityExceptionResolver.class);
 

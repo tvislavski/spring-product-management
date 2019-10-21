@@ -2,6 +2,7 @@ package com.kolotree.springproductmanagement.ports;
 
 import com.kolotree.springproductmanagement.domain.Product;
 import com.kolotree.springproductmanagement.domain.SKU;
+import io.vavr.control.Option;
 
 import java.util.List;
 
@@ -13,9 +14,6 @@ public interface ProductRepository {
 
     boolean delete(SKU productId);
 
-    class DatabaseException extends RuntimeException {
-        public DatabaseException(String message) {
-            super(message);
-        }
-    }
+    Option<Product> findBy(SKU id);
+
 }
