@@ -1,5 +1,5 @@
 ---
 layout: default
-permalink: README.md
+permalink: README.html
 ---
 # Home
