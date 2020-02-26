@@ -1,3 +1,7 @@
+---
+layout: default
+title: Spring Product Management
+---
 # spring-product-management
 
 ## Building the application
