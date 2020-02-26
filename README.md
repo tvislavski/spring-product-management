@@ -15,4 +15,4 @@
 
 ## Database
 
-Application uses a lightweight file-based database [JsonDB][http://jsondb.io], there is no need to install anything on your system as a prerequisite.
+Application uses a lightweight file-based database [JsonDB](http://jsondb.io), there is no need to install anything on your system as a prerequisite.
